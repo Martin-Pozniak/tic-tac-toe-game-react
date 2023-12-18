@@ -11,11 +11,29 @@ function App() {
   const [gameTurns, setGameTurns] = useState([]);
 
 
-  function handleSelectSquare() {
+  function handleSelectSquare(rowIndex, colIndex) {
 
     setActivePlayer((currentPlayer) => currentPlayer === 'X' ? 'O' : 'X')
 
-    setGameTurns([]);
+    setGameTurns((prevTurns) => {
+
+      // Need to set this current player variable instead of using activePlayer in order to not intersect states.
+      let currentPlayer = 'X';
+
+      if (prevTurns.length > 0 && prevTurns[0].player === 'X') {
+        currentPlayer = 'O';
+      }
+
+      const updatedTurns = [
+        {
+          square: { row: rowIndex, col: colIndex },
+          player: currentPlayer
+        },
+        ...prevTurns];
+
+      return updatedTurns;
+
+    });
 
   }
 
@@ -31,13 +49,13 @@ function App() {
           </ol>
 
           {/* Game Board Section */}
-          <GameBoard onSelectSquare={handleSelectSquare} activePlayerSymbol={activePlayer}></GameBoard>
+          <GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns} activePlayerSymbol={activePlayer}></GameBoard>
 
 
         </div>
 
         {/* Log Section*/}
-        <Log></Log>
+        <Log turns={gameTurns}></Log>
 
       </main>
     </>
