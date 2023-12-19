@@ -4,25 +4,30 @@ import Log from "./components/Log/Log";
 
 import { useState } from "react"
 
+function deriveActivePlayer(gameTurns) {
+
+  let currentPlayer = 'X';
+
+  console.log(gameTurns);
+  if (gameTurns.length > 0 && gameTurns[0].player === 'X') {
+    currentPlayer = 'O';
+  }
+
+  return currentPlayer;
+
+}
+
 function App() {
 
-
-  const [activePlayer, setActivePlayer] = useState('X');
   const [gameTurns, setGameTurns] = useState([]);
 
+  const activePlayer = deriveActivePlayer(gameTurns);
 
   function handleSelectSquare(rowIndex, colIndex) {
 
-    setActivePlayer((currentPlayer) => currentPlayer === 'X' ? 'O' : 'X')
-
     setGameTurns((prevTurns) => {
 
-      // Need to set this current player variable instead of using activePlayer in order to not intersect states.
-      let currentPlayer = 'X';
-
-      if (prevTurns.length > 0 && prevTurns[0].player === 'X') {
-        currentPlayer = 'O';
-      }
+      const currentPlayer = deriveActivePlayer(prevTurns);
 
       const updatedTurns = [
         {
@@ -30,6 +35,7 @@ function App() {
           player: currentPlayer
         },
         ...prevTurns];
+
 
       return updatedTurns;
 
