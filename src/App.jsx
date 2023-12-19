@@ -41,13 +41,19 @@ function App() {
   * Member Variables
   /***********************************************************/
   // State Variables
+  const [playerNames, setPlayers] = useState({
+    'X': 'Player 1',
+    'O': 'Player 2'
+  });
   const [gameTurns, setGameTurns] = useState([]);
 
   // Derived State Members
   const activePlayer = deriveActivePlayer(gameTurns);
 
   let winner = undefined;
-  let gameBoard = initialGameBoard;
+
+  // Need to create a copy of the initial game board so we aren't editing by reference but instead by value
+  let gameBoard = [...initialGameBoard.map(array => [...array])];
 
   // Derive the gameboard based on turns
   for (const turn of gameTurns) {
@@ -64,19 +70,34 @@ function App() {
 
   // Derive if there is a winner
   for (const combination of WINNING_COMBINATIONS) {
+
     const firstSquareSymbol = gameBoard[combination[0].row][combination[0].column]
     const secondSquareSymbol = gameBoard[combination[1].row][combination[1].column]
     const thirdSquareSymbol = gameBoard[combination[2].row][combination[2].column]
 
     if (firstSquareSymbol && firstSquareSymbol === secondSquareSymbol && secondSquareSymbol === thirdSquareSymbol) {
       // We have a winner
-      winner = firstSquareSymbol;
+      winner = playerNames[firstSquareSymbol];
     }
-
 
   }
 
   const gameIsDraw = !winner && gameTurns.length === 9
+
+
+  /***********************************************************
+  * Function: handleSelectSquare
+  /***********************************************************/
+  function handlePlayerNameChange(symbol, newName) {
+
+    setPlayers(prevPlayers => {
+      return {
+        ...prevPlayers,
+        [symbol]: newName
+      }
+    })
+
+  }
 
   /***********************************************************
   * Function: handleSelectSquare
@@ -104,6 +125,13 @@ function App() {
   }
 
   /***********************************************************
+  * Function: handleRematch
+  /***********************************************************/
+  function handleRematch() {
+    setGameTurns([]);
+  }
+
+  /***********************************************************
   * Function: MAIN JSX
   /***********************************************************/
   return (
@@ -113,12 +141,12 @@ function App() {
 
           {/* Players Section */}
           <ol id="players" className="highlight-player">
-            <Player initialName="Player 1" symbol="X" isActive={activePlayer === 'X'}></Player>
-            <Player initialName="Player 2" symbol="O" isActive={activePlayer === 'O'}></Player>
+            <Player initialName={playerNames['X']} symbol="X" isActive={activePlayer === 'X'} onPlayerNameChanged={handlePlayerNameChange}></Player>
+            <Player initialName={playerNames['O']} symbol="O" isActive={activePlayer === 'O'} onPlayerNameChanged={handlePlayerNameChange}></Player>
           </ol>
 
           {/* Game Board Section */}
-          {winner || gameIsDraw ? <GameOver winner={winner} /> : undefined}
+          {winner || gameIsDraw ? <GameOver winner={winner} onRematchClicked={handleRematch} /> : undefined}
           <GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns} activePlayerSymbol={activePlayer} board={gameBoard} />
 
         </div>

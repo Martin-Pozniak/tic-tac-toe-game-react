@@ -1,4 +1,4 @@
-export default function GameOver({ winner }) {
+export default function GameOver({ winner, onRematchClicked }) {
 
   return (
     <>
@@ -6,7 +6,7 @@ export default function GameOver({ winner }) {
         <h2>Game Over!</h2>
         {winner ? <p> {winner} has won the game!</p> : <p>It's a draw!</p>}
         <p>
-          <button>Rematch</button>
+          <button onClick={onRematchClicked}>Rematch</button>
         </p>
       </div>
     </>
