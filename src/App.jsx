@@ -5,6 +5,7 @@ import Log from "./components/Log/Log";
 import { WINNING_COMBINATIONS } from "./assets/winning-combinations";
 
 import { useState } from "react"
+import GameOver from "./components/GameOver/GameOver";
 
 /***********************************************************
 * GLOBAL CONSTANTS
@@ -75,6 +76,8 @@ function App() {
 
   }
 
+  const gameIsDraw = !winner && gameTurns.length === 9
+
   /***********************************************************
   * Function: handleSelectSquare
   /***********************************************************/
@@ -115,9 +118,8 @@ function App() {
           </ol>
 
           {/* Game Board Section */}
-          {winner ? <h1>You win {winner}!</h1> : undefined}
-          <GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns} activePlayerSymbol={activePlayer} board={gameBoard}></GameBoard>
-
+          {winner || gameIsDraw ? <GameOver winner={winner} /> : undefined}
+          <GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns} activePlayerSymbol={activePlayer} board={gameBoard} />
 
         </div>
 
