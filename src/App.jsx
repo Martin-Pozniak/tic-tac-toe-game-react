@@ -10,7 +10,12 @@ import GameOver from "./components/GameOver/GameOver";
 /***********************************************************
 * GLOBAL CONSTANTS
 /***********************************************************/
-const initialGameBoard = [
+const INITIAL_PLAYERS = {
+  'X': 'Player 1',
+  'O': 'Player 2'
+}
+
+const INITIAL_GAME_BOARD = [
   [null, null, null],
   [null, null, null],
   [null, null, null]
@@ -33,40 +38,11 @@ function deriveActivePlayer(gameTurns) {
 }
 
 /***********************************************************
-* Function: App
+* GLOBAL FUNCTION: deriveWinner
 /***********************************************************/
-function App() {
-
-  /***********************************************************
-  * Member Variables
-  /***********************************************************/
-  // State Variables
-  const [playerNames, setPlayers] = useState({
-    'X': 'Player 1',
-    'O': 'Player 2'
-  });
-  const [gameTurns, setGameTurns] = useState([]);
-
-  // Derived State Members
-  const activePlayer = deriveActivePlayer(gameTurns);
+function deriveWinner(gameBoard, playerNames) {
 
   let winner = undefined;
-
-  // Need to create a copy of the initial game board so we aren't editing by reference but instead by value
-  let gameBoard = [...initialGameBoard.map(array => [...array])];
-
-  // Derive the gameboard based on turns
-  for (const turn of gameTurns) {
-
-    // Destructure a turn
-    const { square, player } = turn;
-
-    // Destructure row and col from a square
-    const { row, col } = square;
-
-    gameBoard[row][col] = player;
-
-  }
 
   // Derive if there is a winner
   for (const combination of WINNING_COMBINATIONS) {
@@ -81,6 +57,54 @@ function App() {
     }
 
   }
+
+  return winner;
+
+}
+
+/***********************************************************
+* GLOBAL FUNCTION: deriveGameBoard
+/***********************************************************/
+function deriveGameBoard(gameTurns) {
+
+  // Need to create a copy of the initial game board so we aren't editing by reference but instead by value
+  let gameBoard = [...INITIAL_GAME_BOARD.map(array => [...array])];
+
+  // Derive the gameboard based on turns
+  for (const turn of gameTurns) {
+
+    // Destructure a turn
+    const { square, player } = turn;
+
+    // Destructure row and col from a square
+    const { row, col } = square;
+
+    gameBoard[row][col] = player;
+
+  }
+
+  return gameBoard;
+
+}
+
+/***********************************************************
+* Function: App
+/***********************************************************/
+function App() {
+
+  /***********************************************************
+  * Member Variables
+  /***********************************************************/
+  // State Variables
+  const [playerNames, setPlayers] = useState(INITIAL_PLAYERS);
+  const [gameTurns, setGameTurns] = useState([]);
+
+  // Derived State Members
+  const activePlayer = deriveActivePlayer(gameTurns);
+
+  const gameBoard = deriveGameBoard(gameTurns);
+
+  let winner = deriveWinner(gameBoard, playerNames);
 
   const gameIsDraw = !winner && gameTurns.length === 9
 
@@ -141,8 +165,8 @@ function App() {
 
           {/* Players Section */}
           <ol id="players" className="highlight-player">
-            <Player initialName={playerNames['X']} symbol="X" isActive={activePlayer === 'X'} onPlayerNameChanged={handlePlayerNameChange}></Player>
-            <Player initialName={playerNames['O']} symbol="O" isActive={activePlayer === 'O'} onPlayerNameChanged={handlePlayerNameChange}></Player>
+            <Player initialName={INITIAL_PLAYERS.X} symbol="X" isActive={activePlayer === 'X'} onPlayerNameChanged={handlePlayerNameChange}></Player>
+            <Player initialName={INITIAL_PLAYERS.O} symbol="O" isActive={activePlayer === 'O'} onPlayerNameChanged={handlePlayerNameChange}></Player>
           </ol>
 
           {/* Game Board Section */}
